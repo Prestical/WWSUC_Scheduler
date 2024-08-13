@@ -1,17 +1,36 @@
-import javax.imageio.ImageIO;
-import javax.swing.JOptionPane;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class User {
 
-    private String name;
-    private ImageIO profilePhoto;
+    String name;
+    Map<String,ArrayList<String>> busyDays;
 
     
-    User(){
-        name = "Asim";
+    User(String name){
+        this.name = name.toLowerCase();
+        busyDays = new HashMap<>();
     }
 
-    public void showUserInfo(Panel panel){
-        JOptionPane.showMessageDialog(panel, this.name,null,JOptionPane.INFORMATION_MESSAGE);
+    public void getData(HashMap<String,ArrayList<String>> data){
+        // Gets from editPane
+        if (busyDays.isEmpty()) {
+            busyDays.putAll(data);
+            return;
+        }
+
+        for (Map.Entry<String,ArrayList<String>> entry : data.entrySet()) {
+            if (busyDays.containsKey(entry.getKey())) {
+                for (String str : entry.getValue()) {
+                    busyDays.get(entry.getKey()).add(str);
+                }
+            }
+        }
+    }
+
+    @Override
+    public String toString(){
+        return name;
     }
 }
