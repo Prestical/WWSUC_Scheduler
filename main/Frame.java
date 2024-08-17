@@ -1,12 +1,19 @@
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 import javax.swing.*;
 
 public class Frame extends JFrame {
 
-    JMenu saveMenu, uploadMenu;
+    JMenu saveMenu, uploadMenu, changePage;
+    JMenuItem save, upload, editPane, userPane, tablePane; 
     JMenuBar menuBar;
+    MainPanel panel;
 
     Frame(){
         setDefaultValues();
+        setLayout(new FlowLayout());
     }
 
     public void setDefaultValues(){
@@ -14,7 +21,7 @@ public class Frame extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         initializeMenuBar();
         
-        MainPanel panel = new MainPanel();
+        panel = new MainPanel();
         add(panel);
         pack();
 
@@ -25,14 +32,44 @@ public class Frame extends JFrame {
     // These functions will avainable in future
     private void initializeMenuBar(){
         saveMenu = new JMenu("Save");
-        saveMenu.add(new JMenuItem("Save As PDF"));
-
         uploadMenu = new JMenu("Upload");
-        uploadMenu.add(new JMenuItem("Upload File"));
+        changePage = new JMenu("Go to");
+        
+        save = new JMenuItem("Save as PDF");
+        upload = new JMenuItem("Upload File");
+        editPane = new JMenuItem("Edit");
+        tablePane = new JMenuItem("Table");
+        userPane = new JMenuItem("Users");
+
+        saveMenu.add(save);
+        uploadMenu.add(upload);
+        changePage.add(tablePane);
+        changePage.add(editPane);
+        changePage.add(userPane);
+
+        userPane.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                panel.openUserPane();
+            }
+        });
+        editPane.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                panel.openEditPane();
+            }
+        });
+        tablePane.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                panel.openTablePane();
+            }
+        });
+        
+
 
         menuBar = new JMenuBar();
         menuBar.add(saveMenu);
         menuBar.add(uploadMenu);
+        menuBar.add(changePage);
+
         setJMenuBar(menuBar);
     }
 }

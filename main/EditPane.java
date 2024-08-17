@@ -18,7 +18,7 @@ public class EditPane extends JPanel {
 
     EditPane(MainPanel mainPanel){
         this.mainPanel = mainPanel;
-        setBackground(Color.LIGHT_GRAY);
+        setBackground(Color.CYAN);
         setPreferredSize(new Dimension(400,100));
         // setLayout();
         initialization();
@@ -55,7 +55,7 @@ public class EditPane extends JPanel {
         String nameStr = name.getText().toLowerCase();
         for (User user : users) {
             if (nameStr.equals(user.name)){
-                user.getData(data);
+                user.setData(data);
                 break;
             }
         }

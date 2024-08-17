@@ -13,7 +13,7 @@ public class User {
         busyDays = new HashMap<>();
     }
 
-    public void getData(HashMap<String,ArrayList<String>> data){
+    public void setData(HashMap<String,ArrayList<String>> data){
         // Gets from editPane
         if (busyDays.isEmpty()) {
             busyDays.putAll(data);
