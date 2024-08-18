@@ -7,7 +7,7 @@ public class MainPanel extends JPanel{
 
     private int width = 800;
     private int height = 600; 
-    JPanel currPanel;
+    JFrame userFrame, editFrame;
     UserPane userPane;
     TablePane tablePane;
     EditPane editPane;
@@ -15,28 +15,37 @@ public class MainPanel extends JPanel{
 
     // Program Panel. Create everything in here.
     MainPanel(){
-        cardLayout = new CardLayout();
         setPreferredSize(new Dimension(width, height));
-        setLayout(cardLayout);
+        setLayout(new CardLayout());
 
         this.userPane = new UserPane(this);
         this.tablePane = new TablePane(this);
         this.editPane = new EditPane(this);
 
+        userFrame = new JFrame("User List");
+        userFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        userFrame.setResizable(false);
+        userFrame.setLocationRelativeTo(null);
+
+        editFrame = new JFrame("Edit Users Busy Days");
+        editFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        editFrame.setResizable(false);
+        editFrame.setLocationRelativeTo(null);
+
+        editFrame.add(editPane);
+        editFrame.pack();
+        userFrame.add(userPane);
+        userFrame.pack();
+        
         add(tablePane, "TablePane");
-        add(editPane,"EditPane");
-        add(userPane, "UserPane");
+
     }
 
     public void openUserPane(){
-        cardLayout.show(this, "UserPane");
+        userFrame.setVisible(true);
     }
 
     public void openEditPane(){
-        cardLayout.show(this, "EditPane");
-    }
-
-    public void openTablePane(){
-        cardLayout.show(this, "TablePane");
+        editFrame.setVisible(true);
     }
 }

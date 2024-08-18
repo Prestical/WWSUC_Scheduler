@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ public class UserPane extends JPanel {
     private MainPanel mainPanel;
     private JList<User> usersList;
     private JScrollPane scrollPane;
-    private JPanel leftPanel, rightPanel;
+    private JPanel leftPanel, rightPanel, centerPanel;
     private JLabel topLabel;
     private JButton showInfo;
 
@@ -48,6 +49,10 @@ public class UserPane extends JPanel {
         leftPanel.setLayout(new BorderLayout());
         topLabel = new JLabel("User List");
         topLabel.setHorizontalAlignment(JLabel.CENTER);
+        centerPanel = new JPanel();
+        centerPanel.setLayout(new GridLayout(1,2));
+        centerPanel.add(leftPanel);
+        centerPanel.add(rightPanel);
     }
 
     private void showInfoFunc(User selectedUser){
@@ -59,7 +64,7 @@ public class UserPane extends JPanel {
             } 
             message += '\n';
         }
-        JOptionPane.showMessageDialog(mainPanel,message);
+        JOptionPane.showMessageDialog(mainPanel.userFrame,message);
     }    
 
     public User[] getUsers() { return this.users; }

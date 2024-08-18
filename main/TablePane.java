@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Random;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -15,7 +16,7 @@ public class TablePane extends JPanel {
     private MainPanel mainPanel;
     private String[][] emptyRows;
     private JTable table;
-    private JPanel tablePanel;
+    private JPanel tablePanel ,buttonsPanel;
     private DefaultTableModel model;
     private JScrollPane scroll;
     private JButton sortButton;
@@ -28,7 +29,7 @@ public class TablePane extends JPanel {
     TablePane(MainPanel mainPanel){
         this.mainPanel = mainPanel;
         this.tablePanel = new JPanel();
-        
+        this.buttonsPanel = new JPanel();
         this.sortButton = new JButton("Sort");
         sortButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
@@ -41,13 +42,15 @@ public class TablePane extends JPanel {
         setLayout(new BorderLayout());
         
         label = new JLabel("Table");
-        label.setHorizontalAlignment(JLabel.CENTER);
-        label.setPreferredSize(new Dimension(100,30));
+        buttonsPanel.add(label);
+        buttonsPanel.add(sortButton);
+
         mapTimeIndex = timeToIndex();
         mapDayIndex = dayToIndex();
+        users = mainPanel.userPane.getUsers();
         setTable();
-        //add(label,BorderLayout.NORTH);
-        add(sortButton,BorderLayout.NORTH);
+
+        add(buttonsPanel,BorderLayout.NORTH);
         add(tablePanel,BorderLayout.CENTER);
     }
 
@@ -90,41 +93,62 @@ public class TablePane extends JPanel {
     }
 
     public void sortAlgorithm(){
-        String[][] copyTable = emptyRows.clone();
-        users = mainPanel.userPane.getUsers();
+        String[][] copyTable = new String[emptyRows.length][emptyRows[0].length];
+        for (int i = 0; i < emptyRows.length; i++)
+            copyTable[i] = emptyRows[i].clone();
 
         // Index : [X][0] = Time, [X][1...7] = Days (Monday,Tuesday,Wednesday,...); 
         // Index : [0][X] = 9:00, [1][X] = 10:00 , ...
         // 11 rows , 9 columns
-        for (int k = 0; k < users.length; k++) {
-            User currUser = users[k];
-            int addedHours = 0;
-            int maxPlayHours = 4;
-            for(int i = 0; i < copyTable.length; ++i){
-                for (int j = 1; j < copyTable[0].length; ++j) {
-                    if (addedHours == maxPlayHours ) {
-                        break;
-                    }
-                    if (copyTable[i][j] == "") {
-                        if ((!currUser.busyDays.containsKey(mapDayIndex.get(j)))){
-                            copyTable[i][j] = currUser.name;
-                            addedHours++;
-                        }
-                        else{
-                            ArrayList<String> timeStr = currUser.busyDays.get(mapDayIndex.get(j));
-                            if (!timeStr.contains(mapTimeIndex.get(i))) {
-                                copyTable[i][j] = currUser.name;
-                                addedHours++;
-                            }
-                        }
-                    }
-                }
+        boolean[][] isEmptyCell = new boolean[11][9];
+        int[] screenTime = new int[users.length]; 
+        for(int i = 0; i < users.length; i++)
+            screenTime[i] = 5;
+        int userIndex = 0;
+        User currUser = users[userIndex];
+        int totalScreenTime = users.length * 5;
+        Random random = new Random();
+        int errorChecker = 0;
+        int i, j;
+
+        while(totalScreenTime != 0){
+            if (errorChecker > 10000) { // Value can be change
+                JOptionPane.showMessageDialog(this, "Program can't change anything anymore");
+                break;
             }
+
+            i = random.nextInt(11);
+            j = random.nextInt(1,8);
+
+            if (screenTime[userIndex] == 0 && userIndex < users.length - 1){
+                currUser = users[++userIndex];
+            }
+
+            if (isEmptyCell[i][j] == false && copyTable[i][j].equals("")) {
+                if ((!currUser.busyDays.containsKey(mapDayIndex.get(j)))){
+                    copyTable[i][j] = currUser.name;
+                    screenTime[userIndex]--;
+                    isEmptyCell[i][j] = true;
+                    totalScreenTime--;
+                }
+                else{
+                    ArrayList<String> timeStr = currUser.busyDays.get(mapDayIndex.get(j));
+                    if (!timeStr.contains(mapTimeIndex.get(i))) {
+                        copyTable[i][j] = currUser.name;
+                        screenTime[userIndex]--;
+                        isEmptyCell[i][j] = true;
+                        totalScreenTime--;
+                    }
+                } 
+            }
+            errorChecker++;
         }
+
         model.setDataVector(copyTable, col);
         table.setModel(model);
     }
 
+    // Couldn't do with enum because of that I used HashMap
     private HashMap<Integer,String> timeToIndex(){
         HashMap<Integer, String> mapTimeIndex = new HashMap<>();
         mapTimeIndex.put(0,"9:00");
@@ -145,7 +169,7 @@ public class TablePane extends JPanel {
         mapDayIndex.put(1,"Monday");
         mapDayIndex.put(2,"Tuesday");
         mapDayIndex.put(3,"Wednesday");
-        mapDayIndex.put(4,"Thurday");
+        mapDayIndex.put(4,"Thursday");
         mapDayIndex.put(5,"Friday");
         mapDayIndex.put(6,"Saturday");
         mapDayIndex.put(7,"Sunday");

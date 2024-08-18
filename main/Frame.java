@@ -7,7 +7,7 @@ import javax.swing.*;
 public class Frame extends JFrame {
 
     JMenu saveMenu, uploadMenu, changePage;
-    JMenuItem save, upload, editPane, userPane, tablePane; 
+    JMenuItem save, upload, editPane, userPane; 
     JMenuBar menuBar;
     MainPanel panel;
 
@@ -38,12 +38,10 @@ public class Frame extends JFrame {
         save = new JMenuItem("Save as PDF");
         upload = new JMenuItem("Upload File");
         editPane = new JMenuItem("Edit");
-        tablePane = new JMenuItem("Table");
         userPane = new JMenuItem("Users");
 
         saveMenu.add(save);
         uploadMenu.add(upload);
-        changePage.add(tablePane);
         changePage.add(editPane);
         changePage.add(userPane);
 
@@ -55,11 +53,6 @@ public class Frame extends JFrame {
         editPane.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
                 panel.openEditPane();
-            }
-        });
-        tablePane.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e){
-                panel.openTablePane();
             }
         });
         
