@@ -35,7 +35,7 @@ public class Frame extends JFrame {
         uploadMenu = new JMenu("Upload");
         changePage = new JMenu("Go to");
         
-        save = new JMenuItem("Save as PDF");
+        save = new JMenuItem("Save as PNG");
         upload = new JMenuItem("Upload File");
         editPane = new JMenuItem("Edit");
         userPane = new JMenuItem("Users");
@@ -57,7 +57,7 @@ public class Frame extends JFrame {
         });
         save.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
-                
+                panel.openSavePNG();
             }
         });
         upload.addActionListener(new ActionListener() {

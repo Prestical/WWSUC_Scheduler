@@ -1,6 +1,10 @@
 import java.awt.CardLayout;
 import java.awt.Dimension;
+import java.awt.image.BufferedImage;
+import java.awt.Graphics;
+import java.io.File;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 
 public class MainPanel extends JPanel{
@@ -45,6 +49,18 @@ public class MainPanel extends JPanel{
 
     public void openFileUploader(){
         fileUploader.startUpload();
+    }
+
+    public void openSavePNG(){
+        BufferedImage bi = new BufferedImage(this.getSize().width, this.getSize().height, BufferedImage.TYPE_INT_ARGB); 
+        Graphics g = bi.createGraphics();
+        this.paint(g);
+        g.dispose();
+        try{
+            ImageIO.write(bi,"png",new File("./src/output.png"));}
+        catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void openUserPane(){
