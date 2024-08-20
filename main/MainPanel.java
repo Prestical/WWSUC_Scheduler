@@ -8,6 +8,7 @@ public class MainPanel extends JPanel{
     private int width = 800;
     private int height = 600; 
     JFrame userFrame, editFrame;
+    FileUploader fileUploader;
     UserPane userPane;
     TablePane tablePane;
     EditPane editPane;
@@ -18,6 +19,7 @@ public class MainPanel extends JPanel{
         setPreferredSize(new Dimension(width, height));
         setLayout(new CardLayout());
 
+        this.fileUploader = new FileUploader(this);
         this.userPane = new UserPane(this);
         this.tablePane = new TablePane(this);
         this.editPane = new EditPane(this);
@@ -39,6 +41,10 @@ public class MainPanel extends JPanel{
         
         add(tablePane, "TablePane");
 
+    }
+
+    public void openFileUploader(){
+        fileUploader.startUpload();
     }
 
     public void openUserPane(){

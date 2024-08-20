@@ -22,7 +22,7 @@ public class TablePane extends JPanel {
     private JButton sortButton;
     private JLabel label;
     private String[] col;
-    private User[] users;
+    private ArrayList<User> users;
     private HashMap<Integer,String> mapTimeIndex;
     private HashMap<Integer,String> mapDayIndex;
     
@@ -101,12 +101,12 @@ public class TablePane extends JPanel {
         // Index : [0][X] = 9:00, [1][X] = 10:00 , ...
         // 11 rows , 9 columns
         boolean[][] isEmptyCell = new boolean[11][9];
-        int[] screenTime = new int[users.length]; 
-        for(int i = 0; i < users.length; i++)
+        int[] screenTime = new int[users.size()]; 
+        for(int i = 0; i < users.size(); i++)
             screenTime[i] = 5;
         int userIndex = 0;
-        User currUser = users[userIndex];
-        int totalScreenTime = users.length * 5;
+        User currUser = users.get(userIndex);
+        int totalScreenTime = users.size() * 5;
         Random random = new Random();
         int errorChecker = 0;
         int i, j;
@@ -120,8 +120,8 @@ public class TablePane extends JPanel {
             i = random.nextInt(11);
             j = random.nextInt(1,8);
 
-            if (screenTime[userIndex] == 0 && userIndex < users.length - 1){
-                currUser = users[++userIndex];
+            if (screenTime[userIndex] == 0 && userIndex < users.size() - 1){
+                currUser = users.get(++userIndex);
             }
 
             if (isEmptyCell[i][j] == false && copyTable[i][j].equals("")) {

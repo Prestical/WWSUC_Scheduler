@@ -12,7 +12,8 @@ import javax.swing.*;
 
 public class UserPane extends JPanel {
 
-    private User[] users;
+    private ArrayList<User> users;
+    private DefaultListModel<User> listModel;
     private MainPanel mainPanel;
     private JList<User> usersList;
     private JScrollPane scrollPane;
@@ -26,7 +27,7 @@ public class UserPane extends JPanel {
         initialization();
         showInfo.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                showInfoFunc(usersList.getSelectedValue());
+                showInfoFunc((User) usersList.getSelectedValue());
             }
         });
         leftPanel.add(topLabel, BorderLayout.NORTH);
@@ -38,8 +39,12 @@ public class UserPane extends JPanel {
     }
 
     private void initialization(){
-        this.users = new User[] {new User("Asim"),new User("Huseyin"),new User("Levent")}; // Test Initializion
-        usersList = new JList<>(users); // It will read /src/data.txt in the future
+        this.users = new ArrayList<>();
+        this.listModel = new DefaultListModel<>();
+        for (User user : users)
+            listModel.addElement(user);
+        usersList = new JList<>(listModel); // It will read /src/data.txt in the future
+
         scrollPane = new JScrollPane(usersList);
         scrollPane.setPreferredSize(new Dimension(200,200));
         showInfo = new JButton("Show Info");
@@ -65,7 +70,12 @@ public class UserPane extends JPanel {
             message += '\n';
         }
         JOptionPane.showMessageDialog(mainPanel.userFrame,message);
-    }    
+    }
+    
+    public void addNewUser(User user){
+        users.add(user);
+        listModel.addElement(user);
+    }
 
-    public User[] getUsers() { return this.users; }
+    public ArrayList<User> getUsers() { return this.users;}
 }

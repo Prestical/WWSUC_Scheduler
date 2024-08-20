@@ -51,7 +51,7 @@ public class EditPane extends JPanel {
     }
 
     private void submitFunc(){
-        User[] users = mainPanel.userPane.getUsers();
+        ArrayList<User> users = mainPanel.userPane.getUsers();
         // Find current user
         String nameStr = name.getText().toLowerCase();
         for (User user : users) {

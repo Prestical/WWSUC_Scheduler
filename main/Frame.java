@@ -55,8 +55,16 @@ public class Frame extends JFrame {
                 panel.openEditPane();
             }
         });
-        
-
+        save.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                
+            }
+        });
+        upload.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e){
+                panel.openFileUploader();
+            }
+        });
 
         menuBar = new JMenuBar();
         menuBar.add(saveMenu);
