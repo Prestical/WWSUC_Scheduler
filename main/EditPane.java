@@ -3,14 +3,23 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 
 import javax.swing.*;
 
 public class EditPane extends JPanel {
     
-    private HashMap<String,ArrayList<String>> data;
+    private HashMap<String,HashSet<String>> data;
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:mm");
+    private int countDays = 0;
     private MainPanel mainPanel;
     private JTextField name;
     private JPanel checkBoxPanelL, checkBoxPanelR, checkBoxPane, submitPanel;
@@ -21,7 +30,7 @@ public class EditPane extends JPanel {
 
     EditPane(MainPanel mainPanel){
         this.mainPanel = mainPanel;
-        setBackground(Color.CYAN);
+        setBackground(new Color(140, 48, 97));
         setLayout(new BorderLayout());
         //setPreferredSize(new Dimension(400,300));
         initialization();
@@ -51,15 +60,21 @@ public class EditPane extends JPanel {
     }
 
     private void submitFunc(){
-        ArrayList<User> users = mainPanel.userPane.getUsers();
+        User[] users = mainPanel.userPane.getUsers().toArray(new User[0]);
         // Find current user
         String nameStr = name.getText().toLowerCase();
         for (User user : users) {
-            if (nameStr.equals(user.name)){
+            if (user.name.equals(nameStr)){
                 user.setData(data);
                 break;
             }
         }
+        User newUser = new User(nameStr);
+        if (!mainPanel.userPane.getUsers().contains(newUser)) {
+            mainPanel.userPane.addNewUser(newUser);
+            newUser.setData(data);
+        }
+    
         JOptionPane.showMessageDialog(mainPanel.editFrame,"Succesfully Added");
         // Setting default values
         data.clear();
@@ -71,28 +86,26 @@ public class EditPane extends JPanel {
         name.setText("Write name");
         update();
     }
-    private void addBusyFunc(){ 
-        int countDays = 0;
+    private void addBusyFunc() {
         String dayName = "";
         for (JCheckBox boxDays : checkBoxDays) {
             if (boxDays.isSelected()) {
                 dayName = boxDays.getText();
-                countDays++;
-            }
-            else if (countDays > 1) {
+            } else if (countDays > 1) {
                 JOptionPane.showMessageDialog(mainPanel.editFrame, "Please select only one day !");
                 return;
             }
         }
         for (JCheckBox boxHours : checkBoxHours) {
             if (boxHours.isSelected()) {
-                if (!(data.containsKey(dayName)))
-                    data.put(dayName, new ArrayList<>());
-                data.get(dayName).add(boxHours.getText());
+                data.computeIfAbsent(dayName, k -> new HashSet<>()).add(boxHours.getText());
             }
         }
-        String message = name.getText() +  " | " + data.get(dayName);
-        JOptionPane.showMessageDialog(mainPanel.editFrame,message);
+
+        ArrayList<String> timeList = new ArrayList<>(data.get(dayName));
+        Collections.sort(timeList, Comparator.comparing(time -> LocalTime.parse(time,formatter)));
+        String message = name.getText() + " | " + dayName + ": " + timeList;
+        JOptionPane.showMessageDialog(mainPanel.editFrame, message);
         update();
     }
 
@@ -107,11 +120,18 @@ public class EditPane extends JPanel {
         checkBoxPanelL.setLayout(new BoxLayout(checkBoxPanelL, BoxLayout.Y_AXIS));
         checkBoxPanelR.setLayout(new BoxLayout(checkBoxPanelR, BoxLayout.Y_AXIS));
         checkBoxPane.setLayout(new GridLayout(1, 2));
+        checkBoxPanelL.setBackground(new Color(217, 95, 89));
+        checkBoxPanelR.setBackground(new Color(217, 95, 89));
         checkBoxDays = new JCheckBox[busyDays.length];
         checkBoxHours = new JCheckBox[busyHours.length];
 
         for (int i = 0; i < checkBoxDays.length; i++){
             checkBoxDays[i] = new JCheckBox(busyDays[i]);
+            checkBoxDays[i].addItemListener(new ItemListener() {
+                public void itemStateChanged(ItemEvent e){
+                    countDays = e.getStateChange() == 1 ? countDays + 1 : countDays - 1;
+                }
+            });
             checkBoxPanelL.add(checkBoxDays[i]);
         }
         for (int i = 0; i < checkBoxHours.length; i++) {
@@ -124,6 +144,7 @@ public class EditPane extends JPanel {
         
         //Buttons
         submitPanel = new JPanel();
+        submitPanel.setBackground(new Color(217, 95, 89));
         submit = new JButton("Submit");
         addBusy = new JButton("Add Days");
         submitPanel.add(submit);

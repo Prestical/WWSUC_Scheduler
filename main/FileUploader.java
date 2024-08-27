@@ -1,5 +1,5 @@
 import java.io.File;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Scanner;
 
 import javax.swing.JFileChooser;
@@ -44,7 +44,7 @@ public class FileUploader {
 
                 for (int i = 1; i < words.length; i++) {
                     if (!newUser.busyDays.containsKey(day)) {
-                        newUser.busyDays.put(day, new ArrayList<>());
+                        newUser.busyDays.put(day, new HashSet<>());
                     }
                     newUser.busyDays.get(day).add(words[i]);
                 }

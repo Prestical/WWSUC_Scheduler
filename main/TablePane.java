@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Random;
 
 import javax.swing.*;
@@ -14,13 +15,14 @@ import javax.swing.table.DefaultTableModel;
 public class TablePane extends JPanel {
 
     private MainPanel mainPanel;
+    private int hours = 5;
     private String[][] emptyRows;
     private JTable table;
     private JPanel tablePanel ,buttonsPanel;
     private DefaultTableModel model;
     private JScrollPane scroll;
     private JButton sortButton;
-    private JLabel label;
+    private JTextArea inputHours;
     private String[] col;
     private ArrayList<User> users;
     private HashMap<Integer,String> mapTimeIndex;
@@ -28,21 +30,28 @@ public class TablePane extends JPanel {
     
     TablePane(MainPanel mainPanel){
         this.mainPanel = mainPanel;
+        this.inputHours = new JTextArea("Enter Hour");
         this.tablePanel = new JPanel();
         this.buttonsPanel = new JPanel();
         this.sortButton = new JButton("Sort");
         sortButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e){
+                if (mainPanel.userPane.getUsers().isEmpty()) {
+                    JOptionPane.showMessageDialog(mainPanel,"First upload a file or add a new user from edit page");
+                    return;
+                }
                 sortAlgorithm();
             }
         });
 
-        setBackground(new Color(150,100,100));
-        tablePanel.setBackground(new Color(150,100,100));
+        setBackground(new Color(199, 37, 62));
+        tablePanel.setBackground(new Color(199, 37, 62));
+        buttonsPanel.setBackground(new Color(217, 95, 89));
         setLayout(new BorderLayout());
         
-        label = new JLabel("Table");
-        buttonsPanel.add(label);
+        inputHours.setPreferredSize(new Dimension(150, 20));
+        
+        buttonsPanel.add(inputHours);
         buttonsPanel.add(sortButton);
 
         mapTimeIndex = timeToIndex();
@@ -100,13 +109,20 @@ public class TablePane extends JPanel {
         // Index : [X][0] = Time, [X][1...7] = Days (Monday,Tuesday,Wednesday,...); 
         // Index : [0][X] = 9:00, [1][X] = 10:00 , ...
         // 11 rows , 9 columns
+        try {
+            hours = Integer.parseInt(inputHours.getText());
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(mainPanel,"Please enter a valid number");
+            return;
+        }
         boolean[][] isEmptyCell = new boolean[11][9];
         int[] screenTime = new int[users.size()]; 
         for(int i = 0; i < users.size(); i++)
-            screenTime[i] = 5;
+            screenTime[i] = hours;
         int userIndex = 0;
-        User currUser = users.get(userIndex);
-        int totalScreenTime = users.size() * 5;
+        User[] usersArr = users.toArray(new User[0]);
+        User currUser = usersArr[userIndex];
+        int totalScreenTime = users.size() * hours;
         Random random = new Random();
         int errorChecker = 0;
         int i, j;
@@ -114,14 +130,16 @@ public class TablePane extends JPanel {
         while(totalScreenTime != 0){
             if (errorChecker > 10000) { // Value can be change
                 JOptionPane.showMessageDialog(this, "Program can't change anything anymore");
-                break;
+                model.setDataVector(emptyRows, col);
+                table.setModel(model);
+                return;
             }
 
             i = random.nextInt(11);
             j = random.nextInt(1,8);
 
-            if (screenTime[userIndex] == 0 && userIndex < users.size() - 1){
-                currUser = users.get(++userIndex);
+            if (screenTime[userIndex] == 0 && userIndex < usersArr.length - 1){
+                currUser = usersArr[++userIndex];
             }
 
             if (isEmptyCell[i][j] == false && copyTable[i][j].equals("")) {
@@ -132,7 +150,7 @@ public class TablePane extends JPanel {
                     totalScreenTime--;
                 }
                 else{
-                    ArrayList<String> timeStr = currUser.busyDays.get(mapDayIndex.get(j));
+                    HashSet<String> timeStr = currUser.busyDays.get(mapDayIndex.get(j));
                     if (!timeStr.contains(mapTimeIndex.get(i))) {
                         copyTable[i][j] = currUser.name;
                         screenTime[userIndex]--;
